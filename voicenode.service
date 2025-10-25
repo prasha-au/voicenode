@@ -1,0 +1,13 @@
+[Unit]
+Description=Voice Node Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/prasha/voicenode
+ExecStartPre=alsactl --file /home/prasha/.config/asound.state restore
+ExecStart=/bin/bash -c 'source .venv/bin/activate && voicenode'
+Restart=always
+
+[Install]
+WantedBy=default.target

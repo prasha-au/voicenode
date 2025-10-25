@@ -1,0 +1,23 @@
+
+[project]
+name="voicenode"
+version="0.0.1"
+requires-python = ">=3.10"
+dependencies = [
+  "python-dotenv",
+  "PyAudio!=0.2",
+  "openwakeword==0.5.1",
+  "numpy==1.26.4",
+  "scipy",
+  "onnxruntime==1.23.0; os_name == 'nt'",
+  "tflite-runtime==2.14.0; os_name != 'nt'",
+  "speexdsp; os_name != 'nt'",
+  "noisereduce == 3.3.3",
+  "aiomqtt==2.4.0",
+  "rpi-lgpio; os_name != 'nt'",
+  "spidev; os_name != 'nt'",
+]
+
+[project.scripts]
+voicenode = "main:main"
+
