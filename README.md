@@ -1,4 +1,16 @@
 # Voice Node
+This contains a satellite voice assistant node for my [Homenode](https://prasha.au/projects/homenode) home automation system. A lot of the AI features are contained within that system so this node just handles wake word detection, audio processing, and streaming audio to/from the server.
+
+This project aims for **cheap** hardware. You will most likely get better performance designing with an XMOS hardware based system but you should be able to splatter more of these around the house and hopefully make use of any software improvements in the future.
+
+The audio processing is challenging with the Gemini Live API as any speaker feedback will interrupt the model's output. You may be able to run [RNNoise](https://github.com/pengzhendong/pyrnnoise) on a Pi4+ but I was not able to keep up with input. It has been tested with a Pi3 but ideally it will run on a Pi Zero 2W.
+
+## Hardware
+- Raspberry Pi 3+
+- [Respeaker 2-Mics Pi HAT](https://www.aliexpress.com/item/32902300949.html) (using v1)
+- [4Ω speaker (up to 5W)](https://www.aliexpress.com/item/1005005699690954.html)
+- [3D printed case](./voicenode.3mf)
+
 
 
 ## Setup
