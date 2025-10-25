@@ -42,8 +42,9 @@ journalctl --user-unit=voicenode.service
 ## Noise Pipeline
 
 ### Audio Processing Chain
-1. **Acoustic Echo Cancellation (AEC)** - Speex DSP with 4096-sample frames (256ms), 4096-sample filter length
-2. **Noise Reduction (NR)** - Non-stationary spectral gating for residual echo removal
+1. **Dynamic Capture Volume Control** – Reduce speaker echo by lowering microphone capture volume during playback.
+2. **Acoustic Echo Cancellation (AEC)** – Speex DSP with 4096-sample frames (256ms), 4096-sample filter length
+3. **Noise Reduction (NR)** – Non-stationary spectral gating for residual echo removal
 
 ### Noise Reduction Parameters
 
@@ -75,4 +76,5 @@ Streaming configuration matching the 4096-sample AEC frame size. Processes 1024-
 - **Initial startup delay:** ~512ms (buffer fill time)
 - **Steady-state latency:** ~260-280ms (AEC buffering + processing)
 
-
+### Dynamic Capture Volume Control
+The system dynamically adjusts microphone capture volume in sync with audio playback. When the speaker is active, capture volume is reduced minimizing the amount of speaker output picked up by the microphone This adjustment occurs before any acoustic echo cancellation (AEC) or noise reduction (NR) is applied. While hacky, this has a big impact and work well my usage of the device as I will usually I will speak louder to cancel or correct an action.
