@@ -12,7 +12,7 @@ dependencies = [
   "onnxruntime==1.23.0; os_name == 'nt'",
   "tflite-runtime==2.14.0; os_name != 'nt'",
   "speexdsp; os_name != 'nt'",
-  "noisereduce == 3.3.3",
+  "noisereduce == 3.0.3",
   "aiomqtt==2.4.0",
   "rpi-lgpio; os_name != 'nt'",
   "spidev; os_name != 'nt'",
