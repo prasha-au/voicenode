@@ -87,7 +87,6 @@ class VoiceNode:
     await self.hardware.setup()
 
     await self.homenode.connect()
-    logging.info('homenode connected')
 
     await self.audio.setup_streams()
 
@@ -96,9 +95,9 @@ class VoiceNode:
 
     while True:
       self.hardware.set_leds_from_pattern(SingleColorPattern(0xFFFFFF05))
-      logging.info('waiting for wakeword...')
+      logging.info('Waiting for wakeword...')
       await self.wait_for_wake()
-      logging.info('wakeword detected!')
+      logging.info('Wakeword detected!')
 
       try:
         self.hardware.set_leds_from_pattern(RotatePattern(0x1111FF10, 0x0000FF10))
@@ -108,7 +107,7 @@ class VoiceNode:
 
         await self.homenode.start_session()
         self.is_stream_open = True
-        logging.info('homenode session started')
+        logging.info('Live session started')
 
         event_stream_task = asyncio.create_task(self._handle_event_stream())
 
@@ -122,7 +121,7 @@ class VoiceNode:
         pass
       finally:
         self.is_stream_open = False
-        logging.info('homenode session ended')
+        logging.info('Live session ended')
         await cleanup_task_if_exists(audio_input_task)
         await self.homenode.end_session()
         await cleanup_task_if_exists(event_stream_task)
