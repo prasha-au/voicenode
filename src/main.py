@@ -102,7 +102,7 @@ class VoiceNode:
     event_stream_task: Optional[asyncio.Task] = None
 
     while True:
-      self.hardware.set_leds_from_pattern(SingleColorPattern(0xFFFFFF05))
+      self.hardware.set_leds_from_pattern(SingleColorPattern(0x00000000))
       logging.info('Waiting for user...')
       await self.wait_for_user()
       logging.info('User detected!')
