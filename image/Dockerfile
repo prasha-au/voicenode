@@ -1,7 +1,7 @@
 FROM python:3.11.14-bookworm AS builder
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends portaudio19-dev swig libspeexdsp-dev swig
+    apt-get install -y --no-install-recommends portaudio19-dev swig libspeexdsp-dev
 
 WORKDIR /voicenode
 RUN python -m venv .venv
