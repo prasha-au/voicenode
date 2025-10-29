@@ -22,3 +22,16 @@ Acoustic Echo Cancellation (AEC) is implemented using SpeexDSP. This needs to be
 ### 3. Noise Reduction
 Non-stationary spectral gating via [noisereduce](https://github.com/timsainb/noisereduce) is used to remove residual echo and background noise. These parameters should be adjusted to optimize performance on your setup. You may be able to run [RNNoise](https://github.com/pengzhendong/pyrnnoise) on a Pi4+ but I was not able to keep up with input.
 
+
+## Deployment
+The [image folder](./image) contains scripts to provision a pre-flashed base Raspbian Bookworm Lite (64-bit) image. We setup some base kernel drivers and Docker on the device then run the main application in a privileged container. The script can be re-run for updates. You can setup network, hostname, SSH using Raspberry Pi Imager allowing for a full headless setup.
+
+To build the Docker image you can run the following command **from the root folder**:
+```shell
+docker build --platform=linux/arm64 -t voicenode -f image/Dockerfile .
+```
+
+To deploy just run the following with your hostname or IP address:
+```shell
+./image/provision.ps1 voicenode.local
+```
