@@ -7,11 +7,12 @@ from typing import Optional, Coroutine, Any
 from audio import Audio
 from hardware import get_hardware, Hardware
 from light_patterns import FadePattern, RotatePattern, SingleColorPattern
-from wakeword import WakeWordDetector
+from wakeword_detector import WakeWordDetector
 from homenode import Homenode
+from mqtt import MqttConnection
+from wake_arbitration import WakeArbitration
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-
 
 async def cleanup_task_if_exists(task: Optional[asyncio.Task]) -> None:
   if task:
@@ -35,19 +36,27 @@ class VoiceNode:
     self.audio: Audio = Audio()
     self.wakeword: WakeWordDetector = WakeWordDetector()
     self.is_stream_open: bool = False
-    self.homenode: Homenode = Homenode()
+    self.mqtt: MqttConnection = MqttConnection()
+
+    self.homenode: Homenode = Homenode(self.mqtt)
+    self.arbitration: WakeArbitration = WakeArbitration(self.mqtt)
     self.session_end_signal: asyncio.Event = asyncio.Event()
 
-  async def wait_for_wake(self) -> None:
+  async def wait_for_user(self) -> None:
     self.wakeword.reset()
-    is_active = True
-    async def wait_for_wakeword() -> None:
-      while is_active:
-        audio_data = await self.audio.read_data()
-        if self.wakeword.detect(audio_data):
-          return
-    await race_tasks(wait_for_wakeword(), self.hardware.wait_for_button_tap())
-    is_active = False
+    async def wait_for_trigger() -> None:
+      while True:
+        try:
+          audio_data = await self.audio.read_data()
+          score = self.wakeword.detect(audio_data)
+          if score is None:
+            continue
+          should_handle = await self.arbitration.should_handle_request(score)
+          if should_handle:
+            return
+        except Exception as e:
+          logging.error(f'failed waiting for user: {e}')
+    await race_tasks(wait_for_trigger(), self.hardware.wait_for_button_tap())
 
   async def _handle_audio_input(self) -> None:
     buffered = b''
@@ -83,6 +92,8 @@ class VoiceNode:
   async def run(self) -> None:
     await self.hardware.setup()
 
+    await self.mqtt.connect()
+    await self.arbitration.connect()
     await self.homenode.connect()
 
     await self.audio.setup_streams()
@@ -92,9 +103,9 @@ class VoiceNode:
 
     while True:
       self.hardware.set_leds_from_pattern(SingleColorPattern(0xFFFFFF05))
-      logging.info('Waiting for wakeword...')
-      await self.wait_for_wake()
-      logging.info('Wakeword detected!')
+      logging.info('Waiting for user...')
+      await self.wait_for_user()
+      logging.info('User detected!')
 
       try:
         self.hardware.set_leds_from_pattern(RotatePattern(0x1111FF10, 0x0000FF10))
@@ -133,5 +144,5 @@ def main() -> None:
   asyncio.run(voice_node.run())
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()
