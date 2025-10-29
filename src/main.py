@@ -10,9 +10,6 @@ from light_patterns import FadePattern, RotatePattern, SingleColorPattern
 from wakeword import WakeWordDetector
 from homenode import Homenode
 
-from dotenv import load_dotenv
-load_dotenv()
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
 
@@ -134,3 +131,7 @@ def main() -> None:
 
   voice_node = VoiceNode()
   asyncio.run(voice_node.run())
+
+
+if __name__ == '__main__':
+  main()

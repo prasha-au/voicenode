@@ -53,6 +53,8 @@ class Audio:
       frames_per_buffer=FRAME_SIZE,
       stream_callback=self._audio_callback
     )
+    if ALSA_AVAILABLE:
+      subprocess.run(['alsactl', 'restore', '-f', 'asound.state'], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
   async def read_data(self) -> bytes:
     return await asyncio.to_thread(self._mic_queue.get, timeout=1)
@@ -73,7 +75,7 @@ class Audio:
     volume_percent = 40 if is_playing else 90
     print(f'setting capture volume to {volume_percent}%')
     if ALSA_AVAILABLE:
-      subprocess.Popen(['amixer', 'set', '-c', '0', 'Capture', f'{volume_percent}%'], stdout=subprocess.DEVNULL)
+      subprocess.Popen(['amixer', 'set', '-c', '0', 'Capture', f'{volume_percent}%'], stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
 
 
 
