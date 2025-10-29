@@ -1,7 +1,7 @@
 import platform
 import logging
 import numpy as np
-from typing import Any
+from typing import Optional
 
 THRESHOLD = 0.5
 FRAMEWORK = 'onnx' if platform.system() == 'Windows' else 'tflite'
@@ -10,21 +10,20 @@ FRAMEWORK = 'onnx' if platform.system() == 'Windows' else 'tflite'
 class WakeWordDetector:
   def __init__(self) -> None:
     from openwakeword.model import Model
-    self.model: Any = Model(wakeword_models=[f'Hola_casita.{FRAMEWORK}'], inference_framework=FRAMEWORK)
+    self.model = Model(wakeword_models=[f'Hola_casita.{FRAMEWORK}'], inference_framework=FRAMEWORK)
 
-  def detect(self, audio_data: bytes) -> bool:
+  def detect(self, audio_data: bytes) -> Optional[float]:
     data = np.frombuffer(audio_data, dtype=np.int16)
     predictions = self.model.predict(data)
-    prediction = list(predictions.values())[0]
+    prediction = max(predictions.values())
 
     if prediction > 0.1:
       logging.info(f"Wake word prediction: {prediction:.3f}")
 
     if prediction > THRESHOLD:
-      logging.info(f"Wake word DETECTED! Confidence: {prediction:.3f}")
-      return True
+      return float(prediction)
     else:
-      return False
+      return None
 
   def reset(self) -> None:
     self.model.reset()
