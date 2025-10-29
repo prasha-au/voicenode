@@ -5,13 +5,6 @@ import aiomqtt
 import os
 
 class MqttConnection:
-  _instance: Optional['MqttConnection'] = None
-
-  def __new__(cls, *args, **kwargs):
-    if cls._instance is None:
-      cls._instance = super().__new__(cls)
-    return cls._instance
-
   def __init__(self) -> None:
     self._hostname = os.getenv('MQTT_HOST', '192.168.1.4')
     self._port = int(os.getenv('MQTT_PORT', '1883'))
